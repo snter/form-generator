@@ -8,6 +8,11 @@ export const formConf = {
   formRules: 'rules',
   gutter: 15,
   disabled: false,
+  visiable:true,
+  visiableCondition: {
+    or: [],
+    and: []
+  },
   span: 24,
   formBtns: true
 }
@@ -19,11 +24,12 @@ export const inputComponents = [
     __config__: {
       label: '单行文本',
       labelWidth: null,
+      type:'textClass',
       showLabel: true,
       changeTag: true,
       tag: 'el-input',
       tagIcon: 'input',
-      defaultValue: undefined,
+      defaultValue: '',
       required: true,
       layout: 'colFormItem',
       span: 24,
@@ -45,16 +51,22 @@ export const inputComponents = [
     maxlength: null,
     'show-word-limit': false,
     readonly: false,
-    disabled: false
+    disabled: false,
+    visiable: true,
+    visiableCondition: {
+      or: [],
+      and: []
+    },
   },
   {
     __config__: {
       label: '多行文本',
       labelWidth: null,
       showLabel: true,
+      type:'textClass',
       tag: 'el-input',
       tagIcon: 'textarea',
-      defaultValue: undefined,
+      defaultValue: '',
       required: true,
       layout: 'colFormItem',
       span: 24,
@@ -72,7 +84,12 @@ export const inputComponents = [
     maxlength: null,
     'show-word-limit': false,
     readonly: false,
-    disabled: false
+    disabled: false,
+    visiable: true,
+    visiableCondition: {
+      or: [],
+      and: []
+    },
   },
   {
     __config__: {
@@ -80,9 +97,10 @@ export const inputComponents = [
       showLabel: true,
       labelWidth: null,
       changeTag: true,
+      type:'numberClass',
       tag: 'el-input',
       tagIcon: 'password',
-      defaultValue: undefined,
+      defaultValue: '',
       layout: 'colFormItem',
       span: 24,
       required: true,
@@ -102,7 +120,12 @@ export const inputComponents = [
     maxlength: null,
     'show-word-limit': false,
     readonly: false,
-    disabled: false
+    disabled: false,
+    visiable: true,
+    visiableCondition: {
+      or: [],
+      and: []
+    },
   },
   {
     __config__: {
@@ -110,9 +133,10 @@ export const inputComponents = [
       showLabel: true,
       changeTag: true,
       labelWidth: null,
+      type:'numberClass',
       tag: 'el-input-number',
       tagIcon: 'number',
-      defaultValue: undefined,
+      defaultValue: 0,
       span: 24,
       layout: 'colFormItem',
       required: true,
@@ -126,17 +150,23 @@ export const inputComponents = [
     'step-strictly': false,
     precision: undefined,
     'controls-position': '',
-    disabled: false
+    disabled: false,
+    visiable: true,
+    visiableCondition: {
+      or: [],
+      and: []
+    },
   },
   {
     __config__: {
       label: '编辑器',
       showLabel: true,
       changeTag: true,
+      type:'textClass',
       labelWidth: null,
       tag: 'tinymce',
       tagIcon: 'rich-text',
-      defaultValue: null,
+      defaultValue: '',
       span: 24,
       layout: 'colFormItem',
       required: true,
@@ -145,7 +175,39 @@ export const inputComponents = [
     },
     placeholder: '请输入',
     height: 300, // 编辑器高度
-    branding: false // 隐藏右下角品牌烙印
+    branding: false, // 隐藏右下角品牌烙印
+    visiable: true,
+    visiableCondition: {
+      or: [],
+      and: []
+    },
+    
+  },
+  {
+    __config__: {
+      label: '自定义组件',
+      showLabel: true,
+      changeTag: true,
+      type:'textClass',
+      labelWidth: null,
+      tag: 'f-render',
+      tagIcon: 'number',
+      defaultValue: '',
+      span: 24,
+      layout: 'colFormItem',
+      required: true,
+      regList: [],
+      document: 'http://tinymce.ax-z.cn'
+    },
+    placeholder: '请输入',
+    height: 300, // 编辑器高度
+    branding: false, // 隐藏右下角品牌烙印
+    visiable: true,
+    visiableCondition: {
+      or: [],
+      and: []
+    },
+    
   }
 ]
 
@@ -156,6 +218,7 @@ export const selectComponents = [
       label: '下拉选择',
       showLabel: true,
       labelWidth: null,
+      type:'selectClass',
       tag: 'el-select',
       tagIcon: 'select',
       layout: 'colFormItem',
@@ -178,6 +241,11 @@ export const selectComponents = [
     style: { width: '100%' },
     clearable: true,
     disabled: false,
+    visiable: true,
+    visiableCondition: {
+      or: [],
+      and: []
+    },
     filterable: false,
     multiple: false
   },
@@ -188,6 +256,7 @@ export const selectComponents = [
       method: 'get',
       dataPath: 'list',
       dataConsumer: 'options',
+      type:'selectClass',
       showLabel: true,
       labelWidth: null,
       tag: 'el-cascader',
@@ -223,6 +292,11 @@ export const selectComponents = [
     },
     'show-all-levels': true,
     disabled: false,
+    visiable: true,
+    visiableCondition: {
+      or: [],
+      and: []
+    },
     clearable: true,
     filterable: false,
     separator: '/'
@@ -232,6 +306,7 @@ export const selectComponents = [
       label: '单选框组',
       labelWidth: null,
       showLabel: true,
+      type:'selectClass',
       tag: 'el-radio-group',
       tagIcon: 'radio',
       changeTag: true,
@@ -255,13 +330,19 @@ export const selectComponents = [
     },
     style: {},
     size: 'medium',
-    disabled: false
+    disabled: false,
+    visiable: true,
+    visiableCondition: {
+      or: [],
+      and: []
+    },
   },
   {
     __config__: {
       label: '多选框组',
       tag: 'el-checkbox-group',
       tagIcon: 'checkbox',
+      type:'selectClass',
       defaultValue: [],
       span: 24,
       showLabel: true,
@@ -287,13 +368,19 @@ export const selectComponents = [
     size: 'medium',
     min: null,
     max: null,
-    disabled: false
+    disabled: false,
+    visiable: true,
+    visiableCondition: {
+      or: [],
+      and: []
+    },
   },
   {
     __config__: {
       label: '开关',
       tag: 'el-switch',
       tagIcon: 'switch',
+      type:'switchClass',
       defaultValue: false,
       span: 24,
       showLabel: true,
@@ -306,6 +393,11 @@ export const selectComponents = [
     },
     style: {},
     disabled: false,
+    visiable: true,
+    visiableCondition: {
+      or: [],
+      and: []
+    },
     'active-text': '',
     'inactive-text': '',
     'active-color': null,
@@ -318,6 +410,7 @@ export const selectComponents = [
       label: '滑块',
       tag: 'el-slider',
       tagIcon: 'slider',
+      type:'numberClass',
       defaultValue: null,
       span: 24,
       showLabel: true,
@@ -329,6 +422,11 @@ export const selectComponents = [
       document: 'https://element.eleme.cn/#/zh-CN/component/slider'
     },
     disabled: false,
+    visiable: true,
+    visiableCondition: {
+      or: [],
+      and: []
+    },
     min: 0,
     max: 100,
     step: 1,
@@ -341,6 +439,7 @@ export const selectComponents = [
       tag: 'el-time-picker',
       tagIcon: 'time',
       defaultValue: null,
+      type:'numberClass',
       span: 24,
       showLabel: true,
       layout: 'colFormItem',
@@ -353,6 +452,11 @@ export const selectComponents = [
     placeholder: '请选择',
     style: { width: '100%' },
     disabled: false,
+    visiable: true,
+    visiableCondition: {
+      or: [],
+      and: []
+    },
     clearable: true,
     'picker-options': {
       selectableRange: '00:00:00-23:59:59'
@@ -364,6 +468,7 @@ export const selectComponents = [
     __config__: {
       label: '时间范围',
       tag: 'el-time-picker',
+      type:'numberClass',
       tagIcon: 'time-range',
       span: 24,
       showLabel: true,
@@ -377,6 +482,11 @@ export const selectComponents = [
     },
     style: { width: '100%' },
     disabled: false,
+    visiable: true,
+    visiableCondition: {
+      or: [],
+      and: []
+    },
     clearable: true,
     'is-range': true,
     'range-separator': '至',
@@ -391,6 +501,7 @@ export const selectComponents = [
       tag: 'el-date-picker',
       tagIcon: 'date',
       defaultValue: null,
+      // type:'numberClass',
       showLabel: true,
       labelWidth: null,
       span: 24,
@@ -404,6 +515,11 @@ export const selectComponents = [
     type: 'date',
     style: { width: '100%' },
     disabled: false,
+    visiable: true,
+    visiableCondition: {
+      or: [],
+      and: []
+    },
     clearable: true,
     format: 'yyyy-MM-dd',
     'value-format': 'yyyy-MM-dd',
@@ -414,6 +530,7 @@ export const selectComponents = [
       label: '日期范围',
       tag: 'el-date-picker',
       tagIcon: 'date-range',
+      type:'numberClass',
       defaultValue: null,
       span: 24,
       showLabel: true,
@@ -430,6 +547,11 @@ export const selectComponents = [
     'start-placeholder': '开始日期',
     'end-placeholder': '结束日期',
     disabled: false,
+    visiable: true,
+    visiableCondition: {
+      or: [],
+      and: []
+    },
     clearable: true,
     format: 'yyyy-MM-dd',
     'value-format': 'yyyy-MM-dd',
@@ -439,6 +561,7 @@ export const selectComponents = [
     __config__: {
       label: '评分',
       tag: 'el-rate',
+      type:'numberClass',
       tagIcon: 'rate',
       defaultValue: 0,
       span: 24,
@@ -455,7 +578,12 @@ export const selectComponents = [
     'allow-half': false,
     'show-text': false,
     'show-score': false,
-    disabled: false
+    disabled: false,
+    visiable: true,
+    visiableCondition: {
+      or: [],
+      and: []
+    },
   },
   {
     __config__: {
@@ -475,6 +603,11 @@ export const selectComponents = [
     'show-alpha': false,
     'color-format': '',
     disabled: false,
+    visiable: true,
+    visiableCondition: {
+      or: [],
+      and: []
+    },
     size: 'medium'
   },
   {
@@ -505,7 +638,12 @@ export const selectComponents = [
     name: 'file',
     'auto-upload': true,
     'list-type': 'text',
-    multiple: false
+    multiple: false,
+    visiable: true,
+    visiableCondition: {
+      or: [],
+      and: []
+    },
   }
 ]
 
@@ -521,7 +659,12 @@ export const layoutComponents = [
     },
     type: 'default',
     justify: 'start',
-    align: 'top'
+    align: 'top',
+    visiable: true,
+    visiableCondition: {
+      or: [],
+      and: []
+    },
   },
   {
     __config__: {
@@ -544,7 +687,12 @@ export const layoutComponents = [
     size: 'medium',
     plain: false,
     circle: false,
-    disabled: false
+    disabled: false,
+    visiable: true,
+    visiableCondition: {
+      or: [],
+      and: []
+    },
   },
   {
     __config__: {
@@ -622,6 +770,11 @@ export const layoutComponents = [
       value: true
     }],
     border: true,
+    visiable: true,
+    visiableCondition: {
+      or: [],
+      and: []
+    },
     type: 'default',
     justify: 'start',
     align: 'top'

@@ -3,6 +3,7 @@
     <el-tabs v-model="currentTab" class="center-tabs">
       <el-tab-pane label="组件属性" name="field" />
       <el-tab-pane label="表单属性" name="form" />
+      <el-tab-pane label="关联属性" name="relation" />
     </el-tabs>
     <div class="field-box">
       <a class="document-link" target="_blank" :href="documentLink" title="查看组件文档">
@@ -640,6 +641,55 @@
             <el-switch v-model="formConf.unFocusedComponentBorder" />
           </el-form-item>
         </el-form>
+        <!--关联属性-->
+        <el-form v-show="currentTab === 'relation'" size="small" label-width="90px">
+          <el-button type="primary" icon="el-icon-edit" @click="this.addOptionGroup">添加关联条件</el-button>
+          <br><br>
+          <div v-for="(item,index) in conditionOptions" :key="index">
+            <el-card v-if="!visiable" class="box-card">
+            <div slot="header" class="clearfix">
+              <span>条件{{index+1}}</span>
+              <el-button style="float: right; padding: 3px 0" type="text" icon="el-icon-close" @click="closeOption(index)"></el-button>
+            </div>
+            <el-form-item label="选择控件">
+             <el-select v-model="conditionOptions[index].id" placeholder="请选择" @change="getDrawingLists(item)">
+              <el-option
+                v-for="item in drawingLists"
+                :key="item.__vModel__"
+                :label="item.__config__.label"
+                :value="item.__vModel__">
+              </el-option>
+             </el-select>
+            </el-form-item>
+            <el-form-item v-show="!visiable&&conditionOptions[index].id" label="关联条件">
+             <el-select v-model="conditionOptions[index].type" placeholder="请选择">
+              <el-option
+                v-for="item in condition[conditionOptions[index].controlClass]"
+                :key="item.type"
+                :label="item.label"
+                :value="item.type">
+              </el-option>
+             </el-select>
+            </el-form-item>
+            <el-form-item v-show="!visiable&&conditionOptions[index].id" label="值">
+             <el-input v-if="conditionOptions[index].controlClass=='cond1'||conditionOptions[index].controlClass=='cond2'" v-model="conditionOptions[index].content" placeholder="请输入" />
+             <el-select v-if="conditionOptions[index].controlClass=='cond3'" v-model="conditionOptions[index].content" placeholder="请选择">
+              <el-option
+                v-for="item in selectCond"
+                :key="item.value"
+                :label="item.label" 
+                :value="item.value">
+              </el-option>
+             </el-select>
+             <el-switch v-if="conditionOptions[index].controlClass=='cond4'" v-model="conditionOptions[index].content"></el-switch>
+            </el-form-item>
+            <el-form-item v-show="!visiable&&conditionOptions[index].id" label="条件类型">
+             <el-radio v-model="conditionOptions[index].radio" label="1">必须满足</el-radio>
+             <el-radio v-model="conditionOptions[index].radio" label="2">非必须满足</el-radio>
+            </el-form-item>
+            </el-card>
+          </div>
+        </el-form>
       </el-scrollbar>
     </div>
 
@@ -677,7 +727,7 @@ export default {
     TreeNodeDialog,
     IconsDialog
   },
-  props: ['showField', 'activeData', 'formConf'],
+  props: ['showField', 'activeData', 'formConf','drawingList'],
   data() {
     return {
       currentTab: 'field',
@@ -770,7 +820,24 @@ export default {
           const config = data.__config__
           return data.componentName || `${config.label}: ${data.__vModel__}`
         }
-      }
+      },
+      conditionOptions:[],  //条件
+      cond:'cond1',
+      selectCond:[],
+      condition:{
+        cond1:  //数字类控件
+        [
+        {type:'equalto',label:'等于'},
+        {type:'greaterequal',label:'大于等于'},
+        {type:'greaterthan',label:'大于'},
+        {type:'lessthan',label:'小于'},
+        {type:'lessequal',label:'小于等于'},
+        ],
+        cond2:[{type:'equalto',label:'等于'}], //文本类控件
+        cond3:[{type:'equalto',label:'选项'}],  //选择类控件
+        cond4:[{type:'equalto',label:'开关'}],  //开关类控件
+      },
+      visiable:false
     }
   },
   computed: {
@@ -815,7 +882,20 @@ export default {
     },
     isShowStep() {
       return ['el-input-number', 'el-slider'].indexOf(this.activeTag) > -1
+    },
+    drawingLists(){
+      const idx= this.drawingList.findIndex(item=>{
+        return this.activeData.__vModel__ == item.__vModel__
+      })
+      return this.drawingList.filter((item,index)=>{
+         if (this.activeData.__vModel__ != item.__vModel__&&index<idx) {
+           return item
+         }
+      })
     }
+  },
+  mounted(){
+    // console.log(this.activeData)
   },
   watch: {
     formConf: {
@@ -823,9 +903,73 @@ export default {
         saveFormConf(val)
       },
       deep: true
+    },
+    activeData:{
+      handler(val){
+        // console.log(val)
+        this.conditionOptions = []
+        this.visiable = val.visiable
+        const visiableCondition = val.visiableCondition
+        if (visiableCondition.or.length>0||visiableCondition.and.length>0) {
+          this.conditionOptions = visiableCondition.or.concat(visiableCondition.and)
+        }
+      }
+    },
+    conditionOptions:{
+      handler(val){
+        // console.log(val)
+        const cond = {or:[],and:[]}
+        val.forEach(item=>{
+          if (item.radio=='1'&&item.id&&item.type&&item.content) {
+            cond.and.push(item)
+            this.activeData.visiable=false;
+          }else if(item.radio=='2'&&item.id&&item.type&&item.content){
+            cond.or.push(item)
+            this.activeData.visiable=false;
+          }
+        })
+        this.activeData.visiableCondition = cond
+
+        if(val.length == 0){
+          this.activeData.visiable = true
+        }
+      },
+      deep:true
     }
   },
   methods: {
+    getDrawingLists(e){
+      // console.log(e,this.drawingLists)
+      this.drawingList.forEach(item=>{
+        if (item.__vModel__==e.id) {
+          let type = item.__config__.type
+          // console.log(type)
+          if (type=='numberClass') {
+            this.cond = 'cond1'
+            e.controlClass = 'cond1'
+          }else if(type=='textClass'){
+            this.cond = 'cond2'
+            e.controlClass = 'cond2'
+          }else if(type=='selectClass'){
+            this.cond = 'cond3'
+            e.controlClass = 'cond3'
+            this.selectCond = item.__slot__.options
+          }else if(type=='switchClass'){
+            this.cond = 'cond4'
+            e.controlClass = 'cond4'
+          }
+        }
+      })
+    },
+    closeOption(index){
+      this.conditionOptions.splice(index,1)
+    },
+    addOptionGroup(){
+      const obj = {id:'',type:'',content:'',controlClass:'',radio:'1'}
+      this.visiable = false
+      // this.activeData.visiable=false;
+      this.conditionOptions.push(obj)
+    },
     addReg() {
       this.activeData.__config__.regList.push({
         pattern: '',

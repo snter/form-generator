@@ -6,6 +6,7 @@ export default [
       showLabel: true,
       changeTag: true,
       tag: 'el-input',
+      type:'textClass',
       tagIcon: 'input',
       defaultValue: undefined,
       required: true,
@@ -32,6 +33,7 @@ export default [
     maxlength: 11,
     'show-word-limit': true,
     readonly: false,
-    disabled: false
+    disabled: false,
+    visiable: true,
   }
 ]

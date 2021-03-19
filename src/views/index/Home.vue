@@ -68,7 +68,7 @@
             :disabled="formConf.disabled"
             :label-width="formConf.labelWidth + 'px'"
           >
-            <draggable class="drawing-board" :list="drawingList" :animation="340" group="componentsGroup">
+            <draggable class="drawing-board" :list="drawingList" @change="change" :animation="340" group="componentsGroup">
               <draggable-item
                 v-for="(item, index) in drawingList"
                 :key="item.renderKey"
@@ -94,6 +94,7 @@
       :active-data="activeData"
       :form-conf="formConf"
       :show-field="!!drawingList.length"
+      :drawing-list="drawingList"
       @tag-change="tagChange"
       @fetch-data="fetchData"
     />
@@ -133,7 +134,7 @@ import {
   inputComponents, selectComponents, layoutComponents, formConf
 } from '@/components/generator/config'
 import {
-  exportDefault, beautifierConf, isNumberStr, titleCase, deepClone, isObjectObject
+  exportDefault, beautifierConf, isNumberStr, titleCase, deepClone
 } from '@/utils/index'
 import {
   makeUpHtml, vueTemplate, vueScript, cssStyle
@@ -267,27 +268,62 @@ export default {
     })
   },
   methods: {
-    setObjectValueReduce(obj, strKeys, data) {
+    change(e){
+      //改变拖拽顺序时,修改条件内容
+      if (e.moved) {
+        const newIndex = e.moved.newIndex
+        const oldIndex = e.moved.oldIndex
+        if(newIndex<oldIndex){
+          const arr = this.drawingList.slice(newIndex+1,oldIndex+1)
+          arr.forEach(e=>{
+            const vmodel = e.__vModel__
+            const or = this.drawingList[newIndex].visiableCondition.or
+            const and = this.drawingList[newIndex].visiableCondition.and
+            or.forEach((o,i)=>{
+              if(o.id == vmodel){
+                or.splice(i,1)
+              }
+            })
+            and.forEach((a,i)=>{
+              if(a.id == vmodel){
+                and.splice(i,1)
+              }
+            })
+          })
+        }else{
+          const arr = this.drawingList.slice(oldIndex,newIndex)
+          const vmodel = this.drawingList[newIndex].__vModel__
+          arr.forEach(e=>{
+            e.visiableCondition.or.forEach((o,i)=>{
+              if(o.id == vmodel){
+                e.visiableCondition.or.splice(i,1)
+              }
+            })
+            e.visiableCondition.and.forEach((a,i)=>{
+              if(a.id == vmodel){
+                e.visiableCondition.and.splice(i,1)
+              }
+            })
+          })
+        }
+      }
+    },
+    setObjectValueByStringKeys(obj, strKeys, val) {
       const arr = strKeys.split('.')
       arr.reduce((pre, item, i) => {
         if (arr.length === i + 1) {
-          pre[item] = data
-        } else if (!isObjectObject(pre[item])) {
+          pre[item] = val
+        } else if (Object.prototype.toString.call(pre[item]) !== '[Object Object]') {
           pre[item] = {}
         }
         return pre[item]
       }, obj)
     },
-    setRespData(component, resp) {
+    setRespData(component, respData) {
       const { dataPath, renderKey, dataConsumer } = component.__config__
       if (!dataPath || !dataConsumer) return
-      const respData = dataPath.split('.').reduce((pre, item) => pre[item], resp)
-
-      // 将请求回来的数据，赋值到指定属性。
-      // 以el-tabel为例，根据Element文档，应该将数据赋值给el-tabel的data属性，所以dataConsumer的值应为'data';
-      // 此时赋值代码可写成 component[dataConsumer] = respData；
-      // 但为支持更深层级的赋值（如：dataConsumer的值为'options.data'）,使用setObjectValueReduce
-      this.setObjectValueReduce(component, dataConsumer, respData)
+      const data = dataPath.split('.').reduce((pre, item) => pre[item], respData)
+      this.setObjectValueByStringKeys(component, dataConsumer, data)
       const i = this.drawingList.findIndex(item => item.__config__.renderKey === renderKey)
       if (i > -1) this.$set(this.drawingList, i, component)
     },
